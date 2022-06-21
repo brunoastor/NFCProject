@@ -1,4 +1,4 @@
-package br.com.glucoscan.nfcproject;
+package br.com.glucoscan.nfcproject.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import br.com.glucoscan.nfcproject.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(
                 this,0,new Intent(this,this.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),0);
 
+
         if (nfcAdapter != null && nfcAdapter.isEnabled()) {
             Toast.makeText(this, "NFC AVAILABLE", Toast.LENGTH_LONG).show();
         }else{
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "NFC DISABLED", Toast.LENGTH_LONG).show();
             }
         }
+
+
+
     }
 
     @Override

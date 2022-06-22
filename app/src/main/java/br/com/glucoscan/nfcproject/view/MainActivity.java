@@ -1,5 +1,7 @@
 package br.com.glucoscan.nfcproject.view;
 
+import static br.com.glucoscan.nfcproject.control.Util.getNow;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -15,9 +17,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
 
 import br.com.glucoscan.nfcproject.R;
 
@@ -109,13 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String insertTag(String messages) {
 
-
-        //TODO
-        Date dataHoraAtual = new Date();
-        String data = new SimpleDateFormat("dd/MM/yyyy").format(dataHoraAtual);
-        String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);
-
-        misc.add(i, i + "\n" + messages + "\n" + data + "\n" + hora);
+        misc.add(i, i + "\n" + messages + "\n" + getNow());
         textView.setText(misc.get(i));
         currentTagIndex = i;
         i++;
@@ -143,6 +138,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }

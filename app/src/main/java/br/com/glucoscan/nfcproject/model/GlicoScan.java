@@ -1,17 +1,18 @@
 package br.com.glucoscan.nfcproject.model;
 
-import java.util.Date;
-
 public class GlicoScan {
-    private int index;
-    private String tag;
-    private Date date;
-    private NanoDate nanoDate;
 
-    public GlicoScan(int index, String tag, Date date, NanoDate nanoDate) {
-        this.index = index;
+    private String tag;
+    private String date;
+    private long nanoDate;
+
+    public GlicoScan(String tag, String date, long nanoDate) {
         this.tag = tag;
         this.date = date;
-        this.nanoDate = new NanoDate();
+        this.nanoDate = nanoDate;
+    }
+
+    public String getGlicoScan(){
+        return this.tag+ "\n" + this.date +"\n" + this.nanoDate;
     }
 }

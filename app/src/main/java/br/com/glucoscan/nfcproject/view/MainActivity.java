@@ -1,37 +1,35 @@
 package br.com.glucoscan.nfcproject.view;
 
-import static br.com.glucoscan.nfcproject.control.Util.INDEX;
-import static br.com.glucoscan.nfcproject.control.Util.getDate;
+import static br.com.glucoscan.nfcproject.control.AdapterUtil.checkNFC;
+import static br.com.glucoscan.nfcproject.control.AdapterUtil.nfcAdapter;
+import static br.com.glucoscan.nfcproject.control.AdapterUtil.pendingIntent;
+import static br.com.glucoscan.nfcproject.control.AdapterUtil.setPendingIntent;
+import static br.com.glucoscan.nfcproject.control.AdapterUtil.readTag;
+import static br.com.glucoscan.nfcproject.storage.Storage.getScanSize;
+import static br.com.glucoscan.nfcproject.storage.Storage.getScans;
+import static br.com.glucoscan.nfcproject.storage.Storage.insertScan;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.nfc.NdefMessage;
-import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
-
 import br.com.glucoscan.nfcproject.R;
-import br.com.glucoscan.nfcproject.control.Util;
 
 public class MainActivity extends AppCompatActivity {
 
-    static private NfcAdapter nfcAdapter;
-    private PendingIntent pendingIntent = null;
+
     private TextView textView;
     private ConstraintLayout layout;
-    private ArrayList<String> misc = new ArrayList<String>();
+
     private float touchDownX, touchUpX;
-    static private int currentTagIndex = -1;
+    public static int currentTagIndex = -1;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -40,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        setPendingIntent(this);
         InitializeComponents();
-        Util.checkNFC(nfcAdapter, this);
+        checkNFC(this);
 
 
         layout.setOnTouchListener(new View.OnTouchListener() {
@@ -73,13 +72,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNextTag() {
-        if (++currentTagIndex >= misc.size()) currentTagIndex = 0;
-        textView.setText(misc.get(currentTagIndex));
+        if (++currentTagIndex >= getScanSize()) currentTagIndex = 0;
+        //TODO
+        //textView.setText(getScans(currentTagIndex));
+        Log.i("TAG", "NEXT TAG");
     }
 
     private void showPreviousTag() {
-        if (--currentTagIndex < 0) currentTagIndex = misc.size() - 1;
-        textView.setText(misc.get(currentTagIndex));
+        if (--currentTagIndex < 0) currentTagIndex = getScanSize() - 1;
+        //TODO
+        //textView.setText(getScans(currentTagIndex));
+        Log.i("TAG", "BACK TAG");
     }
 
     @Override
@@ -97,35 +100,14 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-            Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            if (rawMessages != null) {
-                NdefMessage[] messages = new NdefMessage[rawMessages.length];
-                for (int i = 0; i < rawMessages.length; i++) {
-                    messages[i] = (NdefMessage) rawMessages[i];
-                    insertTag(new String(messages[i].getRecords()[i].getPayload()));
-                }
-            }
-        }
-    }
-
-    private String insertTag(String messages) {
-
-        misc.add(INDEX, INDEX + "\n" + messages + "\n" + getDate());
-        textView.setText(misc.get(INDEX));
-        currentTagIndex = INDEX;
-        INDEX++;
-        return messages;
+        insertScan(readTag(intent));
+        textView.setText(getScans(getScanSize()-1));
     }
 
     private void InitializeComponents() {
 
         layout = findViewById(R.id.layout);
         textView = findViewById(R.id.textView);
-
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        pendingIntent = PendingIntent.getActivity(
-                this, 0, new Intent(this, this.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
     }
 }

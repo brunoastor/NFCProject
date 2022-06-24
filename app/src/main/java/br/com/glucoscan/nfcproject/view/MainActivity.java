@@ -1,6 +1,7 @@
 package br.com.glucoscan.nfcproject.view;
 
-import static br.com.glucoscan.nfcproject.control.Util.getNow;
+import static br.com.glucoscan.nfcproject.control.Util.INDEX;
+import static br.com.glucoscan.nfcproject.control.Util.getDate;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,22 +16,21 @@ import android.os.Parcelable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 
 import br.com.glucoscan.nfcproject.R;
+import br.com.glucoscan.nfcproject.control.Util;
 
 public class MainActivity extends AppCompatActivity {
 
-    private NfcAdapter nfcAdapter;
+    static private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent = null;
     private TextView textView;
     private ConstraintLayout layout;
     private ArrayList<String> misc = new ArrayList<String>();
     private float touchDownX, touchUpX;
-    private int i;
     static private int currentTagIndex = -1;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         InitializeComponents();
-        checkNFC();
+        Util.checkNFC(nfcAdapter, this);
+
 
         layout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -110,14 +111,15 @@ public class MainActivity extends AppCompatActivity {
 
     private String insertTag(String messages) {
 
-        misc.add(i, i + "\n" + messages + "\n" + getNow());
-        textView.setText(misc.get(i));
-        currentTagIndex = i;
-        i++;
+        misc.add(INDEX, INDEX + "\n" + messages + "\n" + getDate());
+        textView.setText(misc.get(INDEX));
+        currentTagIndex = INDEX;
+        INDEX++;
         return messages;
     }
 
     private void InitializeComponents() {
+
         layout = findViewById(R.id.layout);
         textView = findViewById(R.id.textView);
 
@@ -125,17 +127,5 @@ public class MainActivity extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, this.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-    }
-
-    private void checkNFC() {
-        if (nfcAdapter != null && nfcAdapter.isEnabled()) {
-            Toast.makeText(this, "NFC AVAILABLE", Toast.LENGTH_LONG).show();
-        } else {
-            if (nfcAdapter == null) {
-                Toast.makeText(this, "NFC NOT SUPPORTED", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "NFC DISABLED", Toast.LENGTH_LONG).show();
-            }
-        }
     }
 }

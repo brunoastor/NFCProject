@@ -23,10 +23,10 @@ public class AdapterUtil {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             if (rawMessages != null) {
-                NdefMessage[] messages = new NdefMessage[rawMessages.length];
+                NdefMessage[] tag = new NdefMessage[rawMessages.length];
                 for (int i = 0; i < rawMessages.length; i++) {
-                    messages[i] = (NdefMessage) rawMessages[i];
-                    return new String(messages[i].getRecords()[i].getPayload());
+                    tag[i] = (NdefMessage) rawMessages[i];
+                    return new String(tag[i].getRecords()[i].getPayload());
                 }
             }
         }

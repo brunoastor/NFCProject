@@ -1,13 +1,13 @@
 package br.com.glucoscan.nfcproject.view;
 
+import static br.com.glucoscan.nfcproject.model.GlicoScan.getScanSize;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.checkNFC;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.nfcAdapter;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.pendingIntent;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.setPendingIntent;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.readTag;
-import static br.com.glucoscan.nfcproject.storage.Storage.getScanSize;
-import static br.com.glucoscan.nfcproject.storage.Storage.getScans;
-import static br.com.glucoscan.nfcproject.storage.Storage.insertScan;
+import static br.com.glucoscan.nfcproject.model.GlicoScan.getScanIndex;
+import static br.com.glucoscan.nfcproject.model.GlicoScan.insertScan;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,7 +15,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout layout;
 
     private float touchDownX, touchUpX;
-    public static int currentTagIndex = -1;
+    public static int currentTagIndex = 0;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -57,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
                         touchUpX = event.getX();
                         final float deltaX = touchUpX - touchDownX;
 
-                        if (deltaX > swipeThreshold) {
+                        if (deltaX > swipeThreshold && getScanSize() >= 0) {
                             showPreviousTag();
-                        } else if (deltaX < -swipeThreshold) {
+                        } else if (deltaX < -swipeThreshold && getScanSize() >= 0) {
                             showNextTag();
                         }
 
@@ -72,17 +71,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNextTag() {
-        if (++currentTagIndex >= getScanSize()) currentTagIndex = 0;
-        //TODO
-        //textView.setText(getScans(currentTagIndex));
-        Log.i("TAG", "NEXT TAG");
+        if (++currentTagIndex > getScanSize()) currentTagIndex = 0;
+        textView.setText(getScanIndex(currentTagIndex));
     }
 
     private void showPreviousTag() {
-        if (--currentTagIndex < 0) currentTagIndex = getScanSize() - 1;
-        //TODO
-        //textView.setText(getScans(currentTagIndex));
-        Log.i("TAG", "BACK TAG");
+        if (--currentTagIndex < 0) currentTagIndex = getScanSize();
+        textView.setText(getScanIndex(currentTagIndex));
     }
 
     @Override
@@ -101,13 +96,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         insertScan(readTag(intent));
-        textView.setText(getScans(getScanSize()-1));
+        currentTagIndex = getScanSize();
+        textView.setText(getScanIndex(getScanSize()));
     }
 
     private void InitializeComponents() {
-
         layout = findViewById(R.id.layout);
         textView = findViewById(R.id.textView);
-
     }
 }

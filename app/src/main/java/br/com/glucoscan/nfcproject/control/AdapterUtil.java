@@ -30,10 +30,10 @@ public class AdapterUtil {
                 }
             }
         }
-        return null;
+        return "SCAN_ERROR";
     }
 
-    public static void checkNFC(Context context) {
+    public static void checkDeviceNFC(Context context) {
         if (nfcAdapter != null && nfcAdapter.isEnabled()) {
             Toast.makeText(context, "NFC AVAILABLE", Toast.LENGTH_LONG).show();
         } else {

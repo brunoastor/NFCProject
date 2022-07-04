@@ -1,13 +1,13 @@
 package br.com.glucoscan.nfcproject.view;
 
 import static br.com.glucoscan.nfcproject.model.GlicoScan.getScanSize;
-import static br.com.glucoscan.nfcproject.control.AdapterUtil.checkNFC;
+import static br.com.glucoscan.nfcproject.control.AdapterUtil.checkDeviceNFC;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.nfcAdapter;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.pendingIntent;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.setPendingIntent;
 import static br.com.glucoscan.nfcproject.control.AdapterUtil.readTag;
 import static br.com.glucoscan.nfcproject.model.GlicoScan.getScanIndex;
-import static br.com.glucoscan.nfcproject.model.GlicoScan.insertScan;
+import static br.com.glucoscan.nfcproject.model.GlicoScan.newScan;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -20,6 +20,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import br.com.glucoscan.nfcproject.R;
+
+/* github: brunoastor */
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         setPendingIntent(this);
         InitializeComponents();
-        checkNFC(this);
+        checkDeviceNFC(this);
 
 
         layout.setOnTouchListener(new View.OnTouchListener() {
@@ -89,19 +91,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        assert nfcAdapter != null;
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
     }
 
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        insertScan(readTag(intent));
-        currentTagIndex = getScanSize();
-        textView.setText(getScanIndex(getScanSize()));
+        newScan(readTag(intent));
+        setIndexLastObject();
+        setTextMain();
     }
 
     private void InitializeComponents() {
         layout = findViewById(R.id.layout);
         textView = findViewById(R.id.textView);
+    }
+
+    private void setIndexLastObject() {
+        currentTagIndex = getScanSize();
+    }
+
+    private void setTextMain() {
+        textView.setText(getScanIndex(getScanSize()));
     }
 }

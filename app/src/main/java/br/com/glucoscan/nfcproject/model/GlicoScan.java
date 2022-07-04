@@ -20,7 +20,7 @@ public class GlicoScan {
         this.nanoDate = nanoDate;
     }
 
-    public static void insertScan(String tag) {
+    public static void newScan(String tag) {
         glicoScans.add(index++, new GlicoScan(tag, getDate(), getNanoDate()));
     }
 
@@ -32,9 +32,9 @@ public class GlicoScan {
         return glicoScans.get(i).getScan();
     }
 
-    public String getScan() {
-        return glicoScans.indexOf(this) + "\n" + this.tag + "\n" + this.date + "\n" + this.nanoDate;
+    public String getScan() { return glicoScans.indexOf(this) + "\n" + this.tag + "\n" + this.date + "\n" + this.nanoDate; }
+
+    public String getInfo(int i){
+        return this.tag + "\n" + this.date + "\n" + this.nanoDate;
     }
-
-
 }
